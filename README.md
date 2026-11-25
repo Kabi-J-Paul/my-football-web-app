@@ -3,8 +3,8 @@
 > **Football training plans built on the free ExerciseDB API.**
 > Pick a goal, get a real 6-exercise session with rest timers, tutorials and a searchable library — no signup, no API key, no backend.
 
-**Live site:** _link to be added before submission_ (load balancer → `7308-web-01` / `7308-web-02`)
-**Demo video (≤ 2 min):** _link to be added before submission_
+**Live site:** https://kpaul.tech (load balancer → `7308-web-01` / `7308-web-02`)
+**Demo video :** my video
 
 ---
 
@@ -77,8 +77,8 @@ Equipment is applied as an `equipments` filter when the resulting pool still cov
 No build step, no dependencies — any static file server works.
 
 ```bash
-git clone https://github.com/<you>/pitchify.git
-cd pitchify
+git clone https://github.com/Kabi-J-Paul/Pitchify.git
+cd Pitchify
 python3 -m http.server 8080
 # open http://localhost:8080
 ```
@@ -131,23 +131,25 @@ sudo nginx -t && sudo systemctl reload nginx
 
 Repeat both steps on `web-02`.
 
-**3. Load balancer** — HAProxy on `lb-01` already round-robins `7308-web-01:80` ↔ `7308-web-02:80`, so **no LB change was needed**. Each web server sets the response header `X-Served-By: 7308-web-0N`, which the app shows in its footer.
+**3. Load balancer (HAProxy on `lb-01`)** — round-robins `7308-web-01:80` ↔ `7308-web-02:80` (no change needed for the basic balancing). Each web server sets the response header `X-Served-By: 7308-web-0N`, which the app shows in its footer.
 
-**4. Verify traffic is balanced:**
+**4. SSL / HTTPS on the load balancer** — Let's Encrypt certificate for `kpaul.tech` + `www.kpaul.tech` (certbot `--standalone`, since port 80 was free on the LB). The cert + key were combined into `/etc/haproxy/certs/kpaul.pem` (mode `600`); HAProxy now binds `*:443 ssl crt …` and port 80 redirects with `301` to HTTPS. Renewal needs pre/post hooks that stop/start HAProxy, because Certbot standalone uses port 80. The cert's SAN covers both `kpaul.tech` and `www.kpaul.tech`.
+
+**5. Verify traffic is balanced:**
 
 ```bash
 for i in 1 2 3 4; do curl -sI http://35.177.216.237/ | grep -i x-served-by; done
 # → 7308-web-01, 7308-web-02, 7308-web-01, 7308-web-02  (alternating)
 ```
 
-### Firewall rules (UFW)
+### Firewall rules (UFW) — to apply
 
 | Server | Rules |
 |---|---|
 | `web-01`, `web-02` | `allow 22/tcp` (SSH), `allow from 35.177.216.237 to any port 80` (LB only) — everything else denied |
 | `lb-01` | `allow 22/tcp`, `allow 80/tcp`, `allow 443/tcp` — everything else denied |
 
-Web servers are **not directly reachable from the internet** — only the load balancer can talk to them.
+Apply the SSH rule first so you do not lock yourself out. Once applied, web servers are **not directly reachable from the internet** — only the load balancer can talk to them.
 
 ---
 
