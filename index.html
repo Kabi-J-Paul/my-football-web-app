@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Pitchify — football training plans built on the free ExerciseDB API. Speed, stamina, strength, agility and flexibility sessions for players.">
+  <meta name="color-scheme" content="dark light">
+  <title>Pitchify · Football training, mapped to your goal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://static.exercisedb.dev" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <!-- Exercise data: ExerciseDB V1 by AscendAPI — https://oss.exercisedb.dev/docs -->
+  <script>try{var t=localStorage.getItem('pitchify:theme');if(!t)t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.dataset.theme=t;}catch(e){}</script>
+  <script defer src="js/api.js"></script>
+  <script defer src="js/goals.js"></script>
+  <script defer src="js/ui.js"></script>
+  <script defer src="js/app.js"></script>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="brand" href="#/" aria-label="Pitchify home">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" width="28" height="28" fill="none">
+          <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/>
+          <path d="M16 6l3.6 7.6L27 14.7l-5.5 5.4 1.3 7.6L16 24l-6.8 3.7 1.3-7.6L5 14.7l7.4-1.1L16 6z" fill="currentColor" opacity=".9"/>
+        </svg>
+      </span>
+      <span class="brand-word">PITCHIFY</span>
+    </a>
+
+    <nav class="nav" aria-label="Primary">
+      <a href="#/plan" data-nav="plan">Session</a>
+      <a href="#/browse" data-nav="browse">Library</a>
+    </nav>
+
+    <div class="topbar-actions">
+      <button id="theme-toggle" class="icon-btn" type="button" aria-label="Switch theme" title="Switch theme">
+        <svg class="i-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
+        <svg class="i-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- connection / status banner -->
+  <div id="status-banner" class="banner" hidden role="status"></div>
+
+  <main id="main">
+
+    <!-- ============ ONBOARDING ============ -->
+    <section id="view-onboarding" class="view" hidden>
+      <div class="onb-back-row">
+        <button id="onb-back" class="back-btn" type="button" hidden>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          Back
+        </button>
+        <button id="back-to-session" class="back-btn" type="button" hidden>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          Back to my session
+        </button>
+      </div>
+      <div class="hero">
+        <div class="hero-art" aria-hidden="true">
+          <svg class="pitch-lines" viewBox="0 0 800 420" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <linearGradient id="grass" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="var(--pitch-a)"/>
+                <stop offset="100%" stop-color="var(--pitch-b)"/>
+              </linearGradient>
+            </defs>
+            <rect width="800" height="420" fill="url(#grass)" opacity=".5"/>
+            <g stroke="var(--line)" stroke-width="2" fill="none" opacity=".55">
+              <rect x="24" y="24" width="752" height="372"/>
+              <line x1="400" y1="24" x2="400" y2="396"/>
+              <circle cx="400" cy="210" r="70"/>
+              <rect x="24" y="110" width="120" height="200"/>
+              <rect x="656" y="110" width="120" height="200"/>
+              <rect x="24" y="160" width="50" height="100"/>
+              <rect x="726" y="160" width="50" height="100"/>
+            </g>
+            <g fill="var(--line)" opacity=".8">
+              <circle cx="400" cy="210" r="4"/>
+              <circle cx="270" cy="140" r="6"/>
+              <circle cx="330" cy="260" r="6"/>
+              <circle cx="530" cy="180" r="6"/>
+            </g>
+          </svg>
+        </div>
+
+        <div class="hero-copy reveal">
+          <span class="eyebrow">FOOTBALL TRAINING · POWERED BY EXERCISEDB</span>
+          <h1 class="display">Train the quality<br><em>your game needs.</em></h1>
+          <p class="lede">Pick what you want to improve, tell us your kit, and Pitchify maps it to a
+            live exercise database — GIFs, step-by-step form guides and all.</p>
+        </div>
+
+        <!-- step 1: goal -->
+        <div class="onb-step reveal" data-step="1">
+          <div class="step-head">
+            <span class="step-num">01</span>
+            <h2>What do you want to train?</h2>
+          </div>
+          <div id="goal-grid" class="goal-grid" role="listbox" aria-label="Training goal"></div>
+        </div>
+
+        <!-- step 2: equipment -->
+        <div class="onb-step" data-step="2" hidden>
+          <div class="step-head">
+            <span class="step-num">02</span>
+            <h2>What can you train with?</h2>
+          </div>
+          <div id="equip-grid" class="choice-row" role="listbox" aria-label="Equipment"></div>
+        </div>
+
+        <!-- step 3: level -->
+        <div class="onb-step" data-step="3" hidden>
+          <div class="step-head">
+            <span class="step-num">03</span>
+            <h2>How experienced are you?</h2>
+          </div>
+          <div id="level-grid" class="choice-row" role="listbox" aria-label="Experience level"></div>
+          <div class="onb-actions">
+            <button id="build-plan" class="btn btn-primary btn-lg" type="button" disabled>
+              <span class="btn-label">Build my session</span>
+              <span class="btn-blob" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="onb-progress" role="group" aria-label="Setup steps">
+          <button class="dot is-on" type="button" data-dot="1" aria-label="Step 1: training goal" aria-current="step"></button>
+          <button class="dot" type="button" data-dot="2" aria-label="Step 2: equipment"></button>
+          <button class="dot" type="button" data-dot="3" aria-label="Step 3: experience level"></button>
+          <button id="skip-onb" class="link-btn" type="button">Skip — browse the library instead</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PLAN / SESSION ============ -->
+    <section id="view-plan" class="view" hidden>
+      <div class="plan-back-row">
+        <button id="plan-back" class="back-btn" type="button" aria-label="Go back to the experience level step">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          Back
+        </button>
+      </div>
+      <div class="view-head reveal">
+        <div>
+          <span class="eyebrow" id="plan-eyebrow">TODAY'S SESSION</span>
+          <h1 class="display sm" id="plan-title">Your session</h1>
+          <div class="chip-row" id="plan-chips"></div>
+        </div>
+        <div class="view-head-actions">
+          <button id="change-goal" class="btn btn-ghost" type="button">Edit setup</button>
+          <button id="shuffle-session" class="btn btn-ghost" type="button">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
+            Shuffle
+          </button>
+        </div>
+      </div>
+
+      <div class="plan-layout">
+        <aside class="plan-side">
+          <div class="card panel progress-panel">
+            <span class="panel-label">PROGRESS</span>
+            <div class="ring" id="progress-ring" style="--p:0">
+              <svg viewBox="0 0 120 120" aria-hidden="true">
+                <circle class="ring-bg" cx="60" cy="60" r="52"/>
+                <circle class="ring-fg" cx="60" cy="60" r="52"/>
+              </svg>
+              <div class="ring-text"><strong id="progress-count">0</strong><span>/ <span id="progress-total">6</span></span></div>
+            </div>
+            <p class="muted" id="progress-copy">Tick exercises off as you complete them.</p>
+          </div>
+
+          <div class="card panel timer-panel">
+            <span class="panel-label">REST TIMER</span>
+            <div class="timer-display" id="timer-display">0:60</div>
+            <div class="timer-actions">
+              <button id="timer-start" class="btn btn-primary btn-sm" type="button">Start</button>
+              <button id="timer-reset" class="btn btn-ghost btn-sm" type="button">Reset</button>
+            </div>
+            <p class="muted small" id="timer-hint">Suggested rest for this goal.</p>
+          </div>
+
+          <div class="card panel coach-panel">
+            <span class="panel-label">COACH NOTES</span>
+            <ul class="coach-list" id="coach-list"></ul>
+          </div>
+        </aside>
+
+        <div class="plan-main">
+          <div id="session-list" class="session-list" aria-live="polite"></div>
+          <div id="session-empty" class="empty" hidden>
+            <h3>No session yet</h3>
+            <p class="muted">Build one from your goal, or open the library.</p>
+            <button class="btn btn-primary" data-action="goto-onboarding" type="button">Set up my goal</button>
+          </div>
+          <div id="session-complete" class="card panel complete-panel" hidden>
+            <span class="complete-icon" aria-hidden="true">✓</span>
+            <h3>Session complete</h3>
+            <p class="muted" id="complete-copy">All exercises ticked off — great work. Want to tweak your plan before next time?</p>
+            <div class="complete-actions">
+              <button class="btn btn-ghost complete-btn" type="button" data-change="level">
+                <span class="cb-title">Change difficulty</span>
+                <span class="cb-sub">Beginner · Intermediate · Advanced</span>
+              </button>
+              <button class="btn btn-ghost complete-btn" type="button" data-change="goal">
+                <span class="cb-title">Change training focus</span>
+                <span class="cb-sub">Speed · Agility · Strength · Stamina · Flexibility</span>
+              </button>
+              <button class="btn btn-ghost complete-btn" type="button" data-change="equipment">
+                <span class="cb-title">Change equipment</span>
+                <span class="cb-sub">Bodyweight · Free weights · Full gym</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ BROWSE / LIBRARY ============ -->
+    <section id="view-browse" class="view" hidden>
+      <div class="view-head reveal">
+        <div>
+          <span class="eyebrow">EXERCISE LIBRARY</span>
+          <h1 class="display sm">Browse all exercises</h1>
+        </div>
+        <div class="view-head-actions" id="browse-head-actions"></div>
+      </div>
+
+      <div class="filters card panel">
+        <div class="filter search-filter">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <input id="search-input" type="search" placeholder="Search exercises…" aria-label="Search exercises" autocomplete="off">
+          <button id="search-clear" class="icon-btn sm" type="button" aria-label="Clear search" hidden>×</button>
+        </div>
+
+        <div class="filter-chips" id="goal-chips" aria-label="Quick goal filter"></div>
+
+        <div class="filter-row">
+          <label class="select-wrap">
+            <span>Body part</span>
+            <select id="f-bodypart"><option value="">All body parts</option></select>
+          </label>
+          <label class="select-wrap">
+            <span>Equipment</span>
+            <select id="f-equipment"><option value="">All equipment</option></select>
+          </label>
+          <label class="select-wrap">
+            <span>Muscle</span>
+            <select id="f-muscle"><option value="">All muscles</option></select>
+          </label>
+          <label class="select-wrap">
+            <span>Sort</span>
+            <select id="f-sort">
+              <option value="relevance">Relevance</option>
+              <option value="name-asc">Name A → Z</option>
+              <option value="name-desc">Name Z → A</option>
+              <option value="bodypart">Body part</option>
+            </select>
+          </label>
+          <label class="toggle-wrap" title="Show only saved exercises">
+            <input id="f-favs" type="checkbox">
+            <span class="toggle" aria-hidden="true"></span>
+            <span>Favorites</span>
+          </label>
+        </div>
+      </div>
+
+      <div id="browse-status" class="browse-status muted" role="status"></div>
+      <div id="exercise-grid" class="grid" aria-live="polite"></div>
+
+      <div id="browse-empty" class="empty" hidden>
+        <h3>Nothing matched</h3>
+        <p class="muted">Try a different search, or relax the filters.</p>
+        <button class="btn btn-ghost" id="clear-filters" type="button">Clear filters</button>
+      </div>
+
+      <div class="load-more-wrap">
+        <button id="load-more" class="btn btn-ghost" type="button" hidden>Load more exercises</button>
+      </div>
+    </section>
+
+    <!-- ============ DETAIL ============ -->
+    <section id="view-detail" class="view" hidden>
+      <div id="detail-body" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer id="site-footer" class="footer" hidden>
+    <div class="footer-inner">
+      <span id="served-by" class="served"></span>
+    </div>
+  </footer>
+
+  <!-- exercise detail sheet -->
+  <div id="sheet-backdrop" class="sheet-backdrop" hidden></div>
+  <div id="sheet" class="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheet-title"></div>
+
+  <!-- toasts -->
+  <div id="toasts" class="toasts" aria-live="polite" aria-atomic="false"></div>
+</body>
+</html>
